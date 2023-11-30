@@ -69,7 +69,7 @@ export type ResizeCallback = (
   direction: Direction,
   elementRef: HTMLElement,
   delta: NumberSize,
-) => void;
+) => void | boolean;
 
 export type ResizeStartCallback = (
   e: React.MouseEvent<HTMLElement> | React.TouchEvent<HTMLElement>,
@@ -105,6 +105,7 @@ export interface ResizableProps {
   handleComponent?: HandleComponent;
   children?: React.ReactNode;
   onResizeStart?: ResizeStartCallback;
+  canResize?: ResizeCallback;
   onResize?: ResizeCallback;
   onResizeStop?: ResizeCallback;
   defaultSize?: Size;
@@ -252,6 +253,7 @@ const definedProps = [
   'handleWrapperClass',
   'children',
   'onResizeStart',
+  'canResize',
   'onResize',
   'onResizeStop',
   'handleComponent',
@@ -350,6 +352,7 @@ export class Resizable extends React.PureComponent<ResizableProps, State> {
   public static defaultProps = {
     as: 'div',
     onResizeStart: () => {},
+    canResize: () => {},
     onResize: () => {},
     onResizeStop: () => {},
     enable: {
@@ -845,6 +848,13 @@ export class Resizable extends React.PureComponent<ResizableProps, State> {
       newState.flexBasis = newState.width;
     } else if (this.flexDir === 'column') {
       newState.flexBasis = newState.height;
+    }
+
+    if (this.props.canResize) {
+      const canResize = this.props.canResize(event, direction, this.resizable, delta);
+      if (canResize === false) {
+        return;
+      }
     }
 
     // For v18, update state sync
