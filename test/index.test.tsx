@@ -3,7 +3,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import sinon from 'sinon';
 import TestUtils from 'react-dom/test-utils';
-import { Resizable, ResizableProps } from './';
+import { Resizable, ResizableProps } from '../src';
 
 const { screenshot } = require('avaron');
 
